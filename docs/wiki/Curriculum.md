@@ -1,10 +1,29 @@
 # Curriculum
 
-The course combines four strands:
+The curriculum is intended to move from the mechanics of reasoning toward increasingly difficult questions about physical reality.
 
-1. **Physics** — measurement, motion, waves, experiments, modern-physics concepts.
-2. **Logic & Philosophy** — definitions, propositions, syllogisms, validity, soundness, fallacies, epistemology.
-3. **ELA** — primary-source reading, vocabulary, evidence-based writing, revision, debate, source analysis.
-4. **Mathematics** — graphs, ratios, formulas, measurement, error and quantitative reasoning.
+## Strand A — Logic
 
-Primary-source reading includes public-domain Aristotle, Berkeley, and Hume material imported into the reader.
+Definitions, propositions, premises, conclusions, validity, soundness, syllogisms, counterarguments, fallacies, steelmanning, burden of proof.
+
+## Strand B — Physics
+
+Measurement, motion, variables, models, observation, prediction, experiments, information, and progressively deeper physical concepts.
+
+## Strand C — Philosophy
+
+Knowledge, perception, causation, realism, idealism, skepticism, simulation arguments, and limits of inference.
+
+## Strand D — ELA
+
+Primary-source reading, vocabulary, comprehension, summarization, explanatory writing, argumentative writing, speaking, and debate.
+
+## Recommended lesson progression
+
+A learner should first demonstrate competence in definitions and premise/conclusion recognition before receiving complex open debates.
+
+Later lessons increase transfer: the student encounters unfamiliar propositions and must construct the argument structure independently.
+
+## Mastery rather than seat time
+
+Hours are useful for planning, but completion time alone does not establish mastery. Advancement should depend primarily on demonstrated competencies and successful transfer.
