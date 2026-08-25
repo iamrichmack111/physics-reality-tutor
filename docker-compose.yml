@@ -1,0 +1,13 @@
+services:
+  physics-reality:
+    build: .
+    container_name: physics-reality
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - PORT=5088
+    ports:
+      - "127.0.0.1:5088:5088"
+    volumes:
+      - ./data:/app/data
