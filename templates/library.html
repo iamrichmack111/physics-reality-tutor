@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block content %}
+<div class="hero"><span class="pill">COURSE READER</span><h1>Primary Source Library</h1><p class="muted">Read the source, test comprehension, then reconstruct the argument yourself.</p></div>
+<div class="grid">{% for b in books %}<div class="card"><span class="pill">{{'FULL PUBLIC-DOMAIN TEXT' if b['is_full_text'] else 'STARTER SELECTIONS'}}</span><h2>{{b['title']}}</h2><p class="muted">{{b['author']}}</p><p>{{b['description']}}</p>{% set pct=((b['completed_count'] or 0)/(b['chapter_count'] or 1)*100)|round|int %}<div class="progress"><span style="width:{{pct}}%"></span></div><p class="muted">{{b['completed_count'] or 0}} / {{b['chapter_count'] or 0}} sections · {{pct}}%</p><a class="btn" href="{{url_for('book',book_id=b['id'])}}">Read →</a></div>{% endfor %}</div>
+{% endblock %}

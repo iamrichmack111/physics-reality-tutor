@@ -1,0 +1,36 @@
+{% extends 'base.html' %}{% block content %}
+<div class="reader-toolbar">
+  <a href="{{url_for('book',book_id=chapter['book_id'])}}">← {{chapter['book_title']}}</a>
+  <div class="spacer"></div>
+  <button class="secondary compact" type="button" onclick="readerFont(-1)">A−</button>
+  <button class="secondary compact" type="button" onclick="readerFont(1)">A+</button>
+  <form method="post" action="{{url_for('toggle_bookmark',chapter_id=chapter['id'])}}" class="inline-form"><button class="secondary compact">{{'★ Bookmarked' if bookmarked else '☆ Bookmark'}}</button></form>
+</div>
+<div class="reader-head">
+  <span class="pill">{{'PRIMARY SOURCE — FULL TEXT' if chapter['is_full_text'] else 'TUTOR SELECTION'}}</span>
+  <h1>{{chapter['title']}}</h1>
+  <p class="muted">{{chapter['author']}} · Section {{chapter['position']}} of {{total}}</p>
+  <div class="progress"><span style="width:{{progress}}%"></span></div>
+  <small class="muted">Book mastery {{progress}}%</small>
+</div>
+<article id="readerText" class="card reader primary-source">{{chapter['content']}}</article>
+<div class="source-separation">
+  <div class="card"><span class="pill">SOURCE NOTE</span><p>{{chapter['source_note']}}</p><p class="muted">{% if chapter['is_full_text'] %}The text above is imported public-domain primary-source text. Tutor commentary and assignments remain outside the source text.{% else %}This starter selection is tutor-authored course material, not a quotation of the full primary source. Run the full-text importer from the book screen to replace it with the public-domain source.{% endif %}</p></div>
+</div>
+{% if questions %}
+<form method="post" action="{{url_for('grade_reading',chapter_id=chapter['id'])}}">
+<div class="card"><span class="pill">READING CHECK</span><h2>Check Understanding</h2><p class="muted">80% or higher marks this section complete automatically.{% if best_score is not none %} Best score: <b>{{best_score}}%</b>.{% endif %}</p>
+{% for q in questions %}<div class="question"><p><b>{{loop.index}}. {{q.prompt}}</b></p>{% for option in q.options %}<label class="option"><input type="radio" name="rq{{q.id}}" value="{{option}}" required> {{option}}</label>{% endfor %}</div>{% endfor %}
+<button>Grade Reading Check</button></div></form>
+{% else %}
+<div class="card"><span class="pill">READING COMPLETION</span><h2>Finished this section?</h2><p class="muted">Full-text sections without a reading check can be marked complete manually.</p><form method="post" action="{{url_for('complete_chapter',chapter_id=chapter['id'])}}"><button>✓ Complete Reading</button></form></div>
+{% endif %}
+<div class="reader-nav">
+  {% if prev_ch %}<a class="btn secondary" href="{{url_for('chapter',chapter_id=prev_ch['id'])}}">← {{prev_ch['title']}}</a>{% else %}<span></span>{% endif %}
+  {% if next_ch %}<a class="btn" href="{{url_for('chapter',chapter_id=next_ch['id'])}}">{{next_ch['title']}} →</a>{% endif %}
+</div>
+<script>
+function readerFont(delta){let el=document.getElementById('readerText');let n=parseFloat(localStorage.readerFont||'1.18');n=Math.max(.9,Math.min(1.7,n+delta*.08));localStorage.readerFont=n;el.style.fontSize=n+'rem'}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('readerText').style.fontSize=(localStorage.readerFont||'1.18')+'rem'})
+</script>
+{% endblock %}
