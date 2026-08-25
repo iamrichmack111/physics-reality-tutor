@@ -50,15 +50,7 @@ jobs:
         run: pip-audit -r requirements.txt
 
       - name: Secret-pattern scan
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git grep -nEi \
-            '(BEGIN (RSA |OPENSSH )?PRIVATE KEY|aws_secret_access_key|aws_access_key_id|api[_-]?key[[:space:]]*=[[:space:]]*["'"'][^"'"']+|token[[:space:]]*=[[:space:]]*["'"'][^"'"']+)' \
-            -- . ':!*.md' ':!*.txt' ':!scripts/github-bootstrap.sh'; then
-            echo "Potential committed secret detected."
-            exit 1
-          fi
+        run: python scripts/secret_scan.py
 
       - name: Install D2
         run: curl -fsSL https://d2lang.com/install.sh | sh -s --
@@ -71,6 +63,12 @@ jobs:
           for f in docs/diagrams/*.d2; do
             d2 "$f" "build/diagrams/$(basename "${f%.d2}").svg"
           done
+
+      - name: Create CI environment
+        run: |
+          cat > .env <<'EOF'
+          SECRET_KEY=ci-only-not-production
+          EOF
 
       - name: Validate Docker Compose
         run: docker compose config --quiet
