@@ -50,18 +50,8 @@ jobs:
         run: pip-audit -r requirements.txt
 
       - name: Secret-pattern scan
-        shell: bash
-        run: |
-          set -euo pipefail
+        run: python scripts/secret_scan.py
 
-          PATTERN='(BEGIN (RSA |OPENSSH )?PRIVATE KEY|aws_secret_access_key[[:space:]]*=|aws_access_key_id[[:space:]]*=|api[_-]?key[[:space:]]*=|secret[_-]?key[[:space:]]*=)'
-
-          if git grep -nEi "$PATTERN" -- .             ':!*.md'             ':!*.txt'             ':!scripts/github-bootstrap.sh'; then
-            echo "Potential committed secret detected."
-            exit 1
-          fi
-
-          echo "✓ No obvious committed secrets detected"
       - name: Install D2
         run: curl -fsSL https://d2lang.com/install.sh | sh -s --
 
