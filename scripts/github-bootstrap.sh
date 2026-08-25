@@ -44,7 +44,7 @@ create_closed_issue "Add CI security and validation checks" "Compile Python, aud
 # Push wiki pages to GitHub's separate wiki repository.
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-git clone "https://github.com/$FULL.wiki.git" "$tmp/wiki" || mkdir -p "$tmp/wiki"
+git clone "git@github.com:$FULL.wiki.git" "$tmp/wiki" || mkdir -p "$tmp/wiki"
 cp docs/wiki/*.md "$tmp/wiki/"
 (
   cd "$tmp/wiki"
@@ -54,7 +54,7 @@ cp docs/wiki/*.md "$tmp/wiki/"
       -c user.email="${GIT_AUTHOR_EMAIL:-noreply@richmackos.com}" \
       commit -m "docs: publish project wiki" || true
   git branch -M master
-  git remote get-url origin >/dev/null 2>&1 || git remote add origin "https://github.com/$FULL.wiki.git"
+  git remote get-url origin >/dev/null 2>&1 || git remote add origin "git@github.com:$FULL.wiki.git"
   git push -u origin master
 )
 

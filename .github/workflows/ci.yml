@@ -2,18 +2,25 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+    branches: [main]
 
 permissions:
   contents: read
 
 jobs:
   validate:
+    name: Test, security, D2 & Docker
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
+    timeout-minutes: 20
 
-      - uses: actions/setup-python@v5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
           cache: pip
@@ -24,32 +31,68 @@ jobs:
           pip install -r requirements.txt
           pip install pip-audit
 
-      - name: Python syntax
+      - name: Compile Python
         run: |
-          python -m py_compile app.py course_migrations.py reader_migrations.py import_public_domain_books.py
+          python -m py_compile \
+            app.py \
+            init_db.py \
+            course_migrations.py \
+            reader_migrations.py \
+            import_public_domain_books.py \
+            smoke_test.py
+
+      - name: Flask smoke test
+        env:
+          SECRET_KEY: ci-only-secret-key
+        run: python smoke_test.py
 
       - name: Dependency security audit
         run: pip-audit -r requirements.txt
 
-      - name: Secret scan
+      - name: Secret-pattern scan
+        shell: bash
         run: |
-          if git grep -nEi '(BEGIN (RSA |OPENSSH )?PRIVATE KEY|aws_secret_access_key|api[_-]?key[[:space:]]*=[[:space:]]*["'\''][^"'\'']+|password[[:space:]]*=[[:space:]]*["'\''][^"'\'']+)' -- . ':!*.md' ':!*.txt'; then
-            echo "Potential secret found"
+          set -euo pipefail
+          if git grep -nEi \
+            '(BEGIN (RSA |OPENSSH )?PRIVATE KEY|aws_secret_access_key|aws_access_key_id|api[_-]?key[[:space:]]*=[[:space:]]*["'"'][^"'"']+|token[[:space:]]*=[[:space:]]*["'"'][^"'"']+)' \
+            -- . ':!*.md' ':!*.txt' ':!scripts/github-bootstrap.sh'; then
+            echo "Potential committed secret detected."
             exit 1
           fi
 
       - name: Install D2
         run: curl -fsSL https://d2lang.com/install.sh | sh -s --
 
-      - name: Validate D2 diagrams
+      - name: Validate and render D2
         run: |
+          set -euo pipefail
           mkdir -p build/diagrams
+          d2 static/course_map.d2 build/diagrams/course-map.svg
           for f in docs/diagrams/*.d2; do
             d2 "$f" "build/diagrams/$(basename "${f%.d2}").svg"
           done
 
-      - name: Docker build
+      - name: Validate Docker Compose
+        run: docker compose config --quiet
+
+      - name: Build production image
         run: docker build -t physics-reality-tutor:ci .
 
-      - name: Validate compose
-        run: docker compose config
+      - name: Container health smoke test
+        run: |
+          set -euo pipefail
+          docker run -d --name physics-reality-ci \
+            -e SECRET_KEY=ci-container-secret \
+            -p 127.0.0.1:15088:5088 \
+            physics-reality-tutor:ci
+          trap 'docker logs physics-reality-ci || true; docker rm -f physics-reality-ci || true' EXIT
+          ready=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:15088/health >/dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          test "$ready" -eq 1
+          curl -fsS http://127.0.0.1:15088/health
