@@ -1,0 +1,38 @@
+direction: right
+classes: {
+  stage: {
+    style: {
+      fill: "#101b2d"
+      stroke: "#23d5e8"
+      font-color: "#eafcff"
+      border-radius: 12
+      stroke-width: 2
+    }
+  }
+  core: {
+    style: {
+      fill: "#152844"
+      stroke: "#79f2ff"
+      font-color: "#ffffff"
+      border-radius: 14
+      stroke-width: 3
+    }
+  }
+}
+title: "PHYSICS & REALITY" {
+  class: core
+}
+read: "READ\nPrimary sources" { class: stage }
+define: "DEFINE\nAgree on terms" { class: stage }
+argue: "ARGUE\nSyllogisms + evidence" { class: stage }
+debate: "DEBATE\nSteelman + switch sides" { class: stage }
+experiment: "EXPERIMENT\nPredict → measure" { class: stage }
+evaluate: "EVALUATE\nFallacies + uncertainty" { class: stage }
+write: "WRITE\nELA + lab conclusions" { class: stage }
+mastery: "MASTERY\nAdaptive + spaced review" { class: core }
+
+title -> read -> define -> argue -> debate -> experiment -> evaluate -> write -> mastery
+mastery -> define: "review weak skills" {
+  style.stroke-dash: 5
+  style.stroke: "#79f2ff"
+}

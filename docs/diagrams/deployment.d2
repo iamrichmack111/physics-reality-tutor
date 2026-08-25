@@ -1,0 +1,16 @@
+direction: right
+classes: {
+  node: {
+    style.fill: "#101b2d"
+    style.stroke: "#23d5e8"
+    style.font-color: "#eafcff"
+    style.border-radius: 12
+  }
+}
+student: "Student Browser" { class: node }
+dns: "Route 53\nphysics.richmackos.com" { class: node }
+nginx: "Nginx + TLS\n:443" { class: node }
+docker: "Docker\nphysics-reality" { class: node }
+gunicorn: "Gunicorn\n127.0.0.1:5088" { class: node }
+sqlite: "SQLite\n/app/data" { class: node }
+student -> dns -> nginx -> docker -> gunicorn -> sqlite
