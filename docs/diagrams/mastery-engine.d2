@@ -1,0 +1,38 @@
+direction: right
+
+classes: {
+  core: {
+    style: {
+      fill: "#101b2d"
+      stroke: "#23d5e8"
+      font-color: "#eefcff"
+      border-radius: 12
+      stroke-width: 2
+    }
+  }
+  decision: {
+    style: {
+      fill: "#162844"
+      stroke: "#79f2ff"
+      font-color: "#ffffff"
+      border-radius: 12
+      stroke-width: 3
+    }
+  }
+}
+
+diagnostic: "DIAGNOSTIC\nPhysics • Logic • ELA • Math" { class: core }
+activity: "RECOMMENDED ACTIVITY\nRead • Lesson • Lab • Debate" { class: core }
+grade: "SELF-GRADE\nObjective checks + rubric structure" { class: core }
+mastery: "SKILL MASTERY\nIndependent competency scores" { class: decision }
+weak: "WEAK SKILL?" { class: decision }
+review: "SPACED REVIEW\n1d → 3d → 7d → 14d → 30d" { class: core }
+advance: "ADVANCE\nNext challenge" { class: core }
+transfer: "TRANSFER TEST\nUnfamiliar proposition/problem" { class: core }
+
+diagnostic -> activity -> grade -> mastery -> weak
+weak -> review: "yes"
+review -> activity
+weak -> advance: "no"
+advance -> transfer
+transfer -> mastery

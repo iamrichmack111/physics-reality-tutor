@@ -1,0 +1,28 @@
+direction: right
+
+classes: {
+  node: {
+    style: {
+      fill: "#101b2d"
+      stroke: "#23d5e8"
+      font-color: "#eefcff"
+      border-radius: 12
+    }
+  }
+}
+
+browser: "Student / Admin Browser" { class: node }
+flask: "Flask + Jinja\nRoutes / grading / admin" { class: node }
+sqlite: "SQLite\nAccounts • grades • mastery • reading" { class: node }
+manim: "Manim MP4\nConcept animation" { class: node }
+playwright: "Playwright\nUI validation + screenshots" { class: node }
+ci: "GitHub Actions\nCI • CodeQL • D2 • Docker" { class: node }
+ghcr: "GHCR\namd64 + arm64" { class: node }
+prod: "RichmackOS\nphysics.richmackos.com" { class: node }
+
+browser -> flask -> sqlite
+manim -> browser
+playwright -> browser: "tests"
+ci -> playwright
+ci -> ghcr
+ghcr -> prod

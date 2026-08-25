@@ -1,0 +1,10 @@
+{
+  "name": "physics-reality-tutor-docs",
+  "private": true,
+  "scripts": {
+    "screenshots": "playwright test tests/e2e/screenshots.spec.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

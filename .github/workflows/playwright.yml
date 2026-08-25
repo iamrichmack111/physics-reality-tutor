@@ -1,0 +1,75 @@
+name: Playwright UI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screenshots:
+    name: UI routes & screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Playwright
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Create fresh screenshot database
+        run: |
+          rm -f data/physics_reality.db
+          python init_db.py
+
+      - name: Start application
+        env:
+          SECRET_KEY: playwright-ci-only
+        run: |
+          nohup python app.py > /tmp/physics-reality.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5088/health >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/physics-reality.log
+          exit 1
+
+      - name: Capture screenshots and validate UI routes
+        run: npx playwright test tests/e2e/screenshots.spec.js
+
+      - name: Upload screenshot artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: physics-reality-playwright-screenshots
+          path: |
+            docs/assets/screenshots/*.png
+            playwright-report/
+            test-results/
+          if-no-files-found: warn
+          retention-days: 14

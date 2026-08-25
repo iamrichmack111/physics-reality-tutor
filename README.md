@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/ci.yml/badge.svg)](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/codeql.yml/badge.svg)](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/codeql.yml)
+[![Playwright UI](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/playwright.yml/badge.svg)](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/playwright.yml)
 [![Container](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/container.yml/badge.svg)](https://github.com/iamrichmack111/physics-reality-tutor/actions/workflows/container.yml)
 [![GHCR](https://img.shields.io/badge/container-GHCR-2496ED?logo=docker&logoColor=white)](https://github.com/iamrichmack111/physics-reality-tutor/pkgs/container/physics-reality-tutor)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
@@ -20,7 +21,22 @@ Students predict, manipulate variables, observe results, graph relationships, an
 
 ![Interactive Experiment Lab](docs/assets/experiment-lab.png)
 
-### Manim-guided concept lessons
+#
+### Pull the published multi-architecture image
+
+Release `v1.0.2` is published for both `linux/amd64` and `linux/arm64`:
+
+```bash
+docker pull ghcr.io/iamrichmack111/physics-reality-tutor:v1.0.2
+```
+
+Inspect the manifest with:
+
+```bash
+docker buildx imagetools inspect ghcr.io/iamrichmack111/physics-reality-tutor:v1.0.2
+```
+
+## Manim-guided concept lessons
 
 Lessons combine definitions, propositions, simplified syllogisms, counterarguments, and visual explanations.
 
@@ -45,6 +61,42 @@ D2 source is versioned in the repository:
 - [`docs/diagrams/deployment.d2`](docs/diagrams/deployment.d2) — RichmackOS production architecture
 
 CI parses and renders the D2 sources on every push to catch broken diagrams.
+
+
+## Automated UI screenshots — Playwright
+
+The repository includes Playwright route validation and reproducible screenshots. The suite signs into a fresh seeded database and captures the dashboard, Limited Rendering lesson, Experiment Lab, Library, primary-source reader, Argument Builder, and Mastery dashboard.
+
+Run locally:
+
+```bash
+./scripts/capture-screenshots.sh
+```
+
+Generated images live under [`docs/assets/screenshots/`](docs/assets/screenshots/) and the same test runs in GitHub Actions through [`playwright.yml`](.github/workflows/playwright.yml).
+
+| Dashboard | Limited Rendering |
+|---|---|
+| ![Dashboard](docs/assets/screenshots/01-dashboard.png) | ![Limited Rendering](docs/assets/screenshots/02-limited-rendering-lesson.png) |
+
+| Experiment Lab | Primary-source Reader |
+|---|---|
+| ![Experiment Lab](docs/assets/screenshots/03-experiment-lab.png) | ![Primary-source reader](docs/assets/screenshots/05-primary-source-reader.png) |
+
+| Argument Builder | Mastery |
+|---|---|
+| ![Argument Builder](docs/assets/screenshots/06-argument-builder.png) | ![Mastery dashboard](docs/assets/screenshots/07-mastery-dashboard.png) |
+
+## More D2 system diagrams
+
+D2 is used as versioned architecture documentation, not just as a static picture.
+
+- [`docs/diagrams/learning-loop.d2`](docs/diagrams/learning-loop.d2) — course reasoning loop
+- [`docs/diagrams/deployment.d2`](docs/diagrams/deployment.d2) — RichmackOS production topology
+- [`docs/diagrams/mastery-engine.d2`](docs/diagrams/mastery-engine.d2) — adaptive mastery and spaced-review engine
+- [`docs/diagrams/data-flow.d2`](docs/diagrams/data-flow.d2) — application, UI-test, CI, container, and production flow
+
+The CI D2 validation loop renders every `docs/diagrams/*.d2` source, so these diagrams are automatically syntax-validated on pushes and pull requests.
 
 ## Learning model
 
