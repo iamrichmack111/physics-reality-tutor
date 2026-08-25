@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pip-audit
+
+      - name: Python syntax
+        run: |
+          python -m py_compile app.py course_migrations.py reader_migrations.py import_public_domain_books.py
+
+      - name: Dependency security audit
+        run: pip-audit -r requirements.txt
+
+      - name: Secret scan
+        run: |
+          if git grep -nEi '(BEGIN (RSA |OPENSSH )?PRIVATE KEY|aws_secret_access_key|api[_-]?key[[:space:]]*=[[:space:]]*["'\''][^"'\'']+|password[[:space:]]*=[[:space:]]*["'\''][^"'\'']+)' -- . ':!*.md' ':!*.txt'; then
+            echo "Potential secret found"
+            exit 1
+          fi
+
+      - name: Install D2
+        run: curl -fsSL https://d2lang.com/install.sh | sh -s --
+
+      - name: Validate D2 diagrams
+        run: |
+          mkdir -p build/diagrams
+          for f in docs/diagrams/*.d2; do
+            d2 "$f" "build/diagrams/$(basename "${f%.d2}").svg"
+          done
+
+      - name: Docker build
+        run: docker build -t physics-reality-tutor:ci .
+
+      - name: Validate compose
+        run: docker compose config
