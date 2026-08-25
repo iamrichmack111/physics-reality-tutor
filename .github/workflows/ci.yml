@@ -64,6 +64,12 @@ jobs:
             d2 "$f" "build/diagrams/$(basename "${f%.d2}").svg"
           done
 
+      - name: Create CI environment
+        run: |
+          cat > .env <<'EOF'
+          SECRET_KEY=ci-only-not-production
+          EOF
+
       - name: Validate Docker Compose
         run: docker compose config --quiet
 
